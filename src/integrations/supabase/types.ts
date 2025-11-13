@@ -14,6 +14,30 @@ export type Database = {
   }
   public: {
     Tables: {
+      analytics_events: {
+        Row: {
+          created_at: string
+          event_data: Json | null
+          event_type: string
+          id: string
+          user_id: string | null
+        }
+        Insert: {
+          created_at?: string
+          event_data?: Json | null
+          event_type: string
+          id?: string
+          user_id?: string | null
+        }
+        Update: {
+          created_at?: string
+          event_data?: Json | null
+          event_type?: string
+          id?: string
+          user_id?: string | null
+        }
+        Relationships: []
+      }
       attachments: {
         Row: {
           conversation_id: string
@@ -92,6 +116,39 @@ export type Database = {
         }
         Relationships: []
       }
+      chat_rooms: {
+        Row: {
+          created_at: string
+          created_by: string
+          description: string | null
+          id: string
+          is_private: boolean
+          max_participants: number | null
+          name: string
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          created_by: string
+          description?: string | null
+          id?: string
+          is_private?: boolean
+          max_participants?: number | null
+          name: string
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          created_by?: string
+          description?: string | null
+          id?: string
+          is_private?: boolean
+          max_participants?: number | null
+          name?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
       conversations: {
         Row: {
           archived: boolean
@@ -135,6 +192,36 @@ export type Database = {
             referencedColumns: ["id"]
           },
         ]
+      }
+      custom_backgrounds: {
+        Row: {
+          created_at: string
+          id: string
+          theme_category: string
+          thumbnail_url: string | null
+          user_id: string
+          video_name: string
+          video_path: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          theme_category?: string
+          thumbnail_url?: string | null
+          user_id: string
+          video_name: string
+          video_path: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          theme_category?: string
+          thumbnail_url?: string | null
+          user_id?: string
+          video_name?: string
+          video_path?: string
+        }
+        Relationships: []
       }
       folders: {
         Row: {
@@ -242,6 +329,123 @@ export type Database = {
           updated_at?: string
         }
         Relationships: []
+      }
+      room_messages: {
+        Row: {
+          content: string
+          created_at: string
+          id: string
+          metadata: Json | null
+          room_id: string
+          user_id: string
+        }
+        Insert: {
+          content: string
+          created_at?: string
+          id?: string
+          metadata?: Json | null
+          room_id: string
+          user_id: string
+        }
+        Update: {
+          content?: string
+          created_at?: string
+          id?: string
+          metadata?: Json | null
+          room_id?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "room_messages_room_id_fkey"
+            columns: ["room_id"]
+            isOneToOne: false
+            referencedRelation: "chat_rooms"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      room_participants: {
+        Row: {
+          id: string
+          joined_at: string
+          last_read_at: string
+          role: string
+          room_id: string
+          user_id: string
+        }
+        Insert: {
+          id?: string
+          joined_at?: string
+          last_read_at?: string
+          role?: string
+          room_id: string
+          user_id: string
+        }
+        Update: {
+          id?: string
+          joined_at?: string
+          last_read_at?: string
+          role?: string
+          room_id?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "room_participants_room_id_fkey"
+            columns: ["room_id"]
+            isOneToOne: false
+            referencedRelation: "chat_rooms"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      shared_conversations: {
+        Row: {
+          conversation_id: string
+          created_at: string
+          created_by: string
+          expires_at: string | null
+          id: string
+          is_public: boolean
+          last_accessed_at: string | null
+          password_hash: string | null
+          share_token: string
+          view_count: number
+        }
+        Insert: {
+          conversation_id: string
+          created_at?: string
+          created_by: string
+          expires_at?: string | null
+          id?: string
+          is_public?: boolean
+          last_accessed_at?: string | null
+          password_hash?: string | null
+          share_token?: string
+          view_count?: number
+        }
+        Update: {
+          conversation_id?: string
+          created_at?: string
+          created_by?: string
+          expires_at?: string | null
+          id?: string
+          is_public?: boolean
+          last_accessed_at?: string | null
+          password_hash?: string | null
+          share_token?: string
+          view_count?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "shared_conversations_conversation_id_fkey"
+            columns: ["conversation_id"]
+            isOneToOne: false
+            referencedRelation: "conversations"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       usage_stats: {
         Row: {

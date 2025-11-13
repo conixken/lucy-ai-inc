@@ -8,6 +8,10 @@ import NotFound from "./pages/NotFound";
 import Auth from "./pages/Auth";
 import Chat from "./pages/Chat";
 import Admin from "./pages/Admin";
+import { SharedConversation } from "./pages/SharedConversation";
+import { RoomList } from "./components/rooms/RoomList";
+import { RoomChat } from "./components/rooms/RoomChat";
+import { AnalyticsDashboard } from "./components/analytics/AnalyticsDashboard";
 
 const queryClient = new QueryClient();
 
@@ -22,6 +26,10 @@ const App = () => (
           <Route path="/auth" element={<Auth />} />
           <Route path="/chat" element={<Chat />} />
           <Route path="/admin" element={<Admin />} />
+          <Route path="/shared/:token" element={<SharedConversation />} />
+          <Route path="/rooms" element={<RoomList />} />
+          <Route path="/room/:roomId" element={<RoomChat />} />
+          <Route path="/analytics" element={<AnalyticsDashboard />} />
           {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
           <Route path="*" element={<NotFound />} />
         </Routes>

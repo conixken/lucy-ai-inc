@@ -11,3 +11,15 @@ verify_jwt = true
 
 [functions.model-router]
 verify_jwt = true
+
+[functions.speech-to-text]
+verify_jwt = true
+
+[functions.text-to-speech]
+verify_jwt = true
+
+[functions.share-conversation]
+verify_jwt = true
+
+[functions.analytics]
+verify_jwt = true
