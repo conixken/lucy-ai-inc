@@ -1,7 +1,8 @@
-import { User, Sparkles } from "lucide-react";
+import { User } from "lucide-react";
 import ReactMarkdown from "react-markdown";
 import { Prism as SyntaxHighlighter } from "react-syntax-highlighter";
 import { vscDarkPlus } from "react-syntax-highlighter/dist/esm/styles/prism";
+import { LucyLogo } from "@/components/branding/LucyLogo";
 import { FilePreview } from "./FilePreview";
 import { useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
@@ -38,9 +39,7 @@ export function ChatMessage({ message, isStreaming }: ChatMessageProps) {
   return (
     <div className={`flex gap-4 ${isUser ? 'justify-end' : 'justify-start'}`}>
       {!isUser && (
-        <div className="w-8 h-8 rounded-full bg-gradient-primary flex items-center justify-center flex-shrink-0 animate-pulse-glow">
-          <Sparkles className="w-4 h-4 text-white" />
-        </div>
+        <LucyLogo size="sm" showGlow className="flex-shrink-0" />
       )}
       
       <div className={`max-w-[80%] ${isUser ? 'order-first' : ''}`}>

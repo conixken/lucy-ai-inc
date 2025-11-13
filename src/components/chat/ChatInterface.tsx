@@ -3,7 +3,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { ScrollArea } from "@/components/ui/scroll-area";
-import { Send, Loader2, Sparkles, Search, Download, Upload, Settings2 } from "lucide-react";
+import { Send, Loader2, Search, Download, Upload, Settings2 } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { ChatMessage } from "./ChatMessage";
 import { SidebarTrigger } from "@/components/ui/sidebar";
@@ -11,6 +11,7 @@ import { FileUploadZone } from "./FileUploadZone";
 import { ExportDialog } from "./ExportDialog";
 import { SearchModal } from "./SearchModal";
 import { ModelSelector } from "./ModelSelector";
+import { LucyLogo } from "@/components/branding/LucyLogo";
 
 interface ChatInterfaceProps {
   userId: string;
@@ -270,9 +271,7 @@ export function ChatInterface({ userId, conversationId, onConversationCreated }:
       <header className="h-16 border-b border-border/50 flex items-center justify-between px-6 backdrop-blur-xl bg-background/60">
         <div className="flex items-center gap-3">
           <SidebarTrigger />
-          <div className="w-8 h-8 bg-gradient-primary rounded-lg flex items-center justify-center animate-neural-pulse">
-            <Sparkles className="w-4 h-4 text-white" />
-          </div>
+          <LucyLogo size="sm" showGlow />
           <div>
             <h1 className="font-semibold">{conversationTitle}</h1>
             <p className="text-xs text-muted-foreground">Powered by advanced intelligence</p>
@@ -306,9 +305,7 @@ export function ChatInterface({ userId, conversationId, onConversationCreated }:
       <ScrollArea className="flex-1 px-6 py-8">
         {messages.length === 0 && !streamingMessage && (
           <div className="flex flex-col items-center justify-center h-full text-center space-y-6 max-w-2xl mx-auto">
-            <div className="w-24 h-24 bg-gradient-primary rounded-full flex items-center justify-center animate-neural-pulse">
-              <Sparkles className="w-12 h-12 text-white" />
-            </div>
+            <LucyLogo size="xl" showGlow />
             <div>
               <h2 className="text-3xl font-bold mb-3 bg-gradient-primary bg-clip-text text-transparent">
                 Welcome to Lucy AI

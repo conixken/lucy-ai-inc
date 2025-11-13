@@ -3,6 +3,7 @@ import { useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 import { Sparkles, MessageSquare, Shield, Zap } from "lucide-react";
+import lucyLogo from "@/assets/lucy-logo.png";
 
 const Index = () => {
   const navigate = useNavigate();
@@ -28,8 +29,12 @@ const Index = () => {
       <div className="relative z-10 flex min-h-screen flex-col items-center justify-center px-4 text-center">
         {/* Logo */}
         <div className="mb-8">
-          <div className="w-24 h-24 bg-white rounded-full flex items-center justify-center animate-neural-pulse shadow-glow-violet mx-auto mb-6">
-            <Sparkles className="w-12 h-12 text-primary" />
+          <div className="w-32 h-32 rounded-full flex items-center justify-center animate-neural-pulse shadow-glow-violet mx-auto mb-6 overflow-hidden">
+            <img 
+              src={lucyLogo} 
+              alt="Lucy AI" 
+              className="w-full h-full object-cover"
+            />
           </div>
         </div>
 

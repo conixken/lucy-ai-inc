@@ -7,7 +7,7 @@ import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useToast } from "@/hooks/use-toast";
-import { Sparkles } from "lucide-react";
+import { LucyLogo } from "@/components/branding/LucyLogo";
 
 const Auth = () => {
   const navigate = useNavigate();
@@ -126,11 +126,7 @@ const Auth = () => {
       <Card className="w-full max-w-md mx-4 glass-card relative z-10">
         <CardHeader className="text-center space-y-3">
           <div className="flex justify-center">
-            <div className="relative">
-              <div className="w-16 h-16 bg-gradient-primary rounded-full flex items-center justify-center animate-neural-pulse">
-                <Sparkles className="w-8 h-8 text-white" />
-              </div>
-            </div>
+            <LucyLogo size="lg" showGlow />
           </div>
           <CardTitle className="text-3xl font-bold bg-gradient-primary bg-clip-text text-transparent">
             Lucy AI

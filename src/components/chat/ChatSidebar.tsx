@@ -20,8 +20,7 @@ import { Input } from "@/components/ui/input";
 import { 
   MessageSquarePlus, 
   Search, 
-  LogOut, 
-  Sparkles,
+  LogOut,
   Moon,
   Sun,
   Settings,
@@ -32,6 +31,7 @@ import {
 import { useToast } from "@/hooks/use-toast";
 import { SettingsModal } from "./SettingsModal";
 import { TagManager } from "./TagManager";
+import { LucyLogo } from "@/components/branding/LucyLogo";
 
 interface ChatSidebarProps {
   userId: string;
@@ -157,9 +157,7 @@ export function ChatSidebar({ userId, currentConversationId, onConversationSelec
     <Sidebar className="border-r border-border/50 backdrop-blur-sm bg-background/50">
       <SidebarHeader className="p-4 border-b border-border/50">
         <div className="flex items-center gap-3 mb-4">
-          <div className="w-10 h-10 bg-gradient-primary rounded-lg flex items-center justify-center animate-neural-pulse">
-            <Sparkles className="w-5 h-5 text-white" />
-          </div>
+          <LucyLogo size="sm" showGlow />
           <div>
             <h2 className="font-bold text-lg">Lucy AI</h2>
             <p className="text-xs text-muted-foreground">Beyond Intelligence</p>
