@@ -12,6 +12,9 @@ verify_jwt = true
 [functions.suggest-scene]
 verify_jwt = true
 
+[functions.generate-video-scene]
+verify_jwt = true
+
 [functions.export-conversation]
 verify_jwt = true
 

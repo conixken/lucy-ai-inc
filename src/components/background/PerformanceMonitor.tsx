@@ -4,7 +4,7 @@ import { Badge } from '@/components/ui/badge';
 import { Activity } from 'lucide-react';
 
 interface PerformanceMonitorProps {
-  onQualityChange: (quality: string) => void;
+  onQualityChange: (quality: 'low' | 'medium' | 'high' | 'ultra') => void;
 }
 
 export const PerformanceMonitor = ({ onQualityChange }: PerformanceMonitorProps) => {

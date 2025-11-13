@@ -5,12 +5,11 @@ import { SidebarProvider } from "@/components/ui/sidebar";
 import { ChatSidebar } from "@/components/chat/ChatSidebar";
 import { ChatInterface } from "@/components/chat/ChatInterface";
 import { useToast } from "@/hooks/use-toast";
-import { AdaptiveBackgroundManager } from "@/components/background/AdaptiveBackgroundManager";
+import { UltraRealisticBackgroundManager } from "@/components/background/UltraRealisticBackgroundManager";
 import { VideoControls } from "@/components/background/VideoControls";
-import { ParticleOverlay } from "@/components/particles/ParticleOverlay";
-import { SoundscapePlayer } from "@/components/soundscape/SoundscapePlayer";
 import { PerformanceMonitor } from "@/components/background/PerformanceMonitor";
 import { ScenePlaylistManager } from "@/components/background/ScenePlaylistManager";
+import { BackgroundSettingsDialog } from "@/components/background/BackgroundSettingsDialog";
 
 const Chat = () => {
   const navigate = useNavigate();
@@ -23,24 +22,47 @@ const Chat = () => {
   const [videoTheme, setVideoTheme] = useState('nature');
   const [isVideoPaused, setIsVideoPaused] = useState(false);
   const [isVideoMuted, setIsVideoMuted] = useState(true);
-  const [particlesEnabled, setParticlesEnabled] = useState(true);
-  const [soundscapeEnabled, setSoundscapeEnabled] = useState(false);
-  const [soundscapeVolume, setSoundscapeVolume] = useState(0.5);
-  const [performanceQuality, setPerformanceQuality] = useState('high');
+  const [audioEnabled, setAudioEnabled] = useState(false);
+  const [audioVolume, setAudioVolume] = useState(0.4);
+  const [performanceQuality, setPerformanceQuality] = useState<'low' | 'medium' | 'high' | 'ultra'>('high');
+  const [parallaxIntensity, setParallaxIntensity] = useState(0.5);
+  const [effectsEnabled, setEffectsEnabled] = useState(true);
   const [activePlaylistId, setActivePlaylistId] = useState<string | null>(null);
+
+  const handleAudioEnabledChange = (enabled: boolean) => {
+    setAudioEnabled(enabled);
+    localStorage.setItem('lucy-audio-enabled', String(enabled));
+  };
+
+  const handleAudioVolumeChange = (volume: number) => {
+    setAudioVolume(volume);
+    localStorage.setItem('lucy-audio-volume', String(volume));
+  };
+
+  const handleEffectsEnabledChange = (enabled: boolean) => {
+    setEffectsEnabled(enabled);
+    localStorage.setItem('lucy-effects-enabled', String(enabled));
+  };
+
+  const handleParallaxIntensityChange = (intensity: number) => {
+    setParallaxIntensity(intensity);
+    localStorage.setItem('lucy-parallax-intensity', String(intensity));
+  };
 
   // Load preferences
   useEffect(() => {
     const savedTheme = localStorage.getItem('lucy-bg-theme');
     const savedMuted = localStorage.getItem('lucy-bg-muted');
-    const savedParticles = localStorage.getItem('lucy-particles');
-    const savedSoundscape = localStorage.getItem('lucy-soundscape');
-    const savedVolume = localStorage.getItem('lucy-soundscape-volume');
+    const savedAudio = localStorage.getItem('lucy-audio-enabled');
+    const savedVolume = localStorage.getItem('lucy-audio-volume');
+    const savedEffects = localStorage.getItem('lucy-effects-enabled');
+    const savedParallax = localStorage.getItem('lucy-parallax-intensity');
     if (savedTheme) setVideoTheme(savedTheme);
     if (savedMuted) setIsVideoMuted(savedMuted === 'true');
-    if (savedParticles) setParticlesEnabled(savedParticles === 'true');
-    if (savedSoundscape) setSoundscapeEnabled(savedSoundscape === 'true');
-    if (savedVolume) setSoundscapeVolume(parseFloat(savedVolume));
+    if (savedAudio) setAudioEnabled(savedAudio === 'true');
+    if (savedVolume) setAudioVolume(parseFloat(savedVolume));
+    if (savedEffects) setEffectsEnabled(savedEffects === 'true');
+    if (savedParallax) setParallaxIntensity(parseFloat(savedParallax));
   }, []);
 
   const handleThemeChange = (theme: string) => {
@@ -94,15 +116,16 @@ const Chat = () => {
 
   return (
     <>
-      <AdaptiveBackgroundManager
-        userId={user?.id}
+      <UltraRealisticBackgroundManager
+        theme={videoTheme}
         isPaused={isVideoPaused}
         isMuted={isVideoMuted}
-        currentTheme={videoTheme}
+        audioEnabled={audioEnabled}
+        audioVolume={audioVolume}
         performanceQuality={performanceQuality}
+        parallaxIntensity={parallaxIntensity}
+        effectsEnabled={effectsEnabled}
       />
-      <ParticleOverlay theme={videoTheme} enabled={particlesEnabled} />
-      <SoundscapePlayer theme={videoTheme} enabled={soundscapeEnabled} volume={soundscapeVolume} />
       <PerformanceMonitor onQualityChange={setPerformanceQuality} />
       <SidebarProvider>
         <div className="min-h-screen flex w-full relative">
@@ -119,6 +142,16 @@ const Chat = () => {
                   onTogglePause={toggleVideoPause}
                   onToggleMute={toggleVideoMute}
                   onChangeTheme={handleThemeChange}
+                />
+                <BackgroundSettingsDialog
+                  audioEnabled={audioEnabled}
+                  audioVolume={audioVolume}
+                  effectsEnabled={effectsEnabled}
+                  parallaxIntensity={parallaxIntensity}
+                  onAudioEnabledChange={handleAudioEnabledChange}
+                  onAudioVolumeChange={handleAudioVolumeChange}
+                  onEffectsEnabledChange={handleEffectsEnabledChange}
+                  onParallaxIntensityChange={handleParallaxIntensityChange}
                 />
                 {user && (
                   <ScenePlaylistManager
