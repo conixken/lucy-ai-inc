@@ -6,6 +6,12 @@ verify_jwt = true
 [functions.upload-attachment]
 verify_jwt = true
 
+[functions.generate-ai-scene]
+verify_jwt = true
+
+[functions.suggest-scene]
+verify_jwt = true
+
 [functions.export-conversation]
 verify_jwt = true
 

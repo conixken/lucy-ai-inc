@@ -5,10 +5,12 @@ import { SidebarProvider } from "@/components/ui/sidebar";
 import { ChatSidebar } from "@/components/chat/ChatSidebar";
 import { ChatInterface } from "@/components/chat/ChatInterface";
 import { useToast } from "@/hooks/use-toast";
-import { BackgroundVideo } from "@/components/background/BackgroundVideo";
+import { AdaptiveBackgroundManager } from "@/components/background/AdaptiveBackgroundManager";
 import { VideoControls } from "@/components/background/VideoControls";
 import { ParticleOverlay } from "@/components/particles/ParticleOverlay";
 import { SoundscapePlayer } from "@/components/soundscape/SoundscapePlayer";
+import { PerformanceMonitor } from "@/components/background/PerformanceMonitor";
+import { ScenePlaylistManager } from "@/components/background/ScenePlaylistManager";
 
 const Chat = () => {
   const navigate = useNavigate();
@@ -24,6 +26,8 @@ const Chat = () => {
   const [particlesEnabled, setParticlesEnabled] = useState(true);
   const [soundscapeEnabled, setSoundscapeEnabled] = useState(false);
   const [soundscapeVolume, setSoundscapeVolume] = useState(0.5);
+  const [performanceQuality, setPerformanceQuality] = useState('high');
+  const [activePlaylistId, setActivePlaylistId] = useState<string | null>(null);
 
   // Load preferences
   useEffect(() => {
@@ -90,13 +94,16 @@ const Chat = () => {
 
   return (
     <>
-      <BackgroundVideo 
-        theme={videoTheme}
+      <AdaptiveBackgroundManager
+        userId={user?.id}
         isPaused={isVideoPaused}
         isMuted={isVideoMuted}
+        currentTheme={videoTheme}
+        performanceQuality={performanceQuality}
       />
       <ParticleOverlay theme={videoTheme} enabled={particlesEnabled} />
       <SoundscapePlayer theme={videoTheme} enabled={soundscapeEnabled} volume={soundscapeVolume} />
+      <PerformanceMonitor onQualityChange={setPerformanceQuality} />
       <SidebarProvider>
         <div className="min-h-screen flex w-full relative">
           <ChatSidebar 
@@ -104,14 +111,22 @@ const Chat = () => {
             currentConversationId={currentConversationId}
             onConversationSelect={setCurrentConversationId}
             videoControls={
-              <VideoControls
-                isPaused={isVideoPaused}
-                isMuted={isVideoMuted}
-                currentTheme={videoTheme}
-                onTogglePause={toggleVideoPause}
-                onToggleMute={toggleVideoMute}
-                onChangeTheme={handleThemeChange}
-              />
+              <div className="flex gap-2">
+                <VideoControls
+                  isPaused={isVideoPaused}
+                  isMuted={isVideoMuted}
+                  currentTheme={videoTheme}
+                  onTogglePause={toggleVideoPause}
+                  onToggleMute={toggleVideoMute}
+                  onChangeTheme={handleThemeChange}
+                />
+                {user && (
+                  <ScenePlaylistManager
+                    userId={user.id}
+                    onSelectPlaylist={setActivePlaylistId}
+                  />
+                )}
+              </div>
             }
           />
           <ChatInterface 
