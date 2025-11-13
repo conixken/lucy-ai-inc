@@ -312,6 +312,18 @@ export type Database = {
         }
         Returns: boolean
       }
+      search_messages: {
+        Args: { search_query: string }
+        Returns: {
+          content: string
+          conversation_id: string
+          conversation_title: string
+          created_at: string
+          id: string
+          rank: number
+          role: string
+        }[]
+      }
     }
     Enums: {
       app_role: "admin" | "moderator" | "user"

@@ -1,1 +1,13 @@
 project_id = "guqljelishrthxiftedq"
+
+[functions.chat-stream]
+verify_jwt = true
+
+[functions.upload-attachment]
+verify_jwt = true
+
+[functions.export-conversation]
+verify_jwt = true
+
+[functions.model-router]
+verify_jwt = true

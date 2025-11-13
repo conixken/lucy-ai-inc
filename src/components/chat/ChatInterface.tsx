@@ -3,10 +3,14 @@ import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { ScrollArea } from "@/components/ui/scroll-area";
-import { Send, Loader2, Sparkles } from "lucide-react";
+import { Send, Loader2, Sparkles, Search, Download, Upload, Settings2 } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { ChatMessage } from "./ChatMessage";
 import { SidebarTrigger } from "@/components/ui/sidebar";
+import { FileUploadZone } from "./FileUploadZone";
+import { ExportDialog } from "./ExportDialog";
+import { SearchModal } from "./SearchModal";
+import { ModelSelector } from "./ModelSelector";
 
 interface ChatInterfaceProps {
   userId: string;
@@ -21,10 +25,19 @@ export function ChatInterface({ userId, conversationId, onConversationCreated }:
   const [isLoading, setIsLoading] = useState(false);
   const scrollRef = useRef<HTMLDivElement>(null);
   const [streamingMessage, setStreamingMessage] = useState("");
+  const [selectedFiles, setSelectedFiles] = useState<File[]>([]);
+  const [uploadedAttachments, setUploadedAttachments] = useState<any[]>([]);
+  const [showExport, setShowExport] = useState(false);
+  const [showSearch, setShowSearch] = useState(false);
+  const [conversationTitle, setConversationTitle] = useState("New Conversation");
+  const [selectedModel, setSelectedModel] = useState<string | null>(null);
+  const [fusionEnabled, setFusionEnabled] = useState(false);
+  const [showModelSelector, setShowModelSelector] = useState(false);
 
   useEffect(() => {
     if (conversationId) {
       loadMessages();
+      loadConversationDetails();
 
       // Set up realtime subscription for messages
       const channel = supabase
@@ -48,8 +61,19 @@ export function ChatInterface({ userId, conversationId, onConversationCreated }:
       };
     } else {
       setMessages([]);
+      setConversationTitle("New Conversation");
     }
   }, [conversationId]);
+
+  const loadConversationDetails = async () => {
+    if (!conversationId) return;
+    const { data } = await supabase
+      .from('conversations')
+      .select('title')
+      .eq('id', conversationId)
+      .single();
+    if (data) setConversationTitle(data.title);
+  };
 
   useEffect(() => {
     // Scroll to bottom when messages change
@@ -98,8 +122,40 @@ export function ChatInterface({ userId, conversationId, onConversationCreated }:
     if (error) throw error;
   };
 
+  const uploadFiles = async (convId: string, msgId: string) => {
+    if (selectedFiles.length === 0) return [];
+
+    const attachments = [];
+    for (const file of selectedFiles) {
+      const formData = new FormData();
+      formData.append('file', file);
+      formData.append('conversationId', convId);
+      formData.append('messageId', msgId);
+
+      const { data: { session } } = await supabase.auth.getSession();
+      const response = await fetch(
+        `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/upload-attachment`,
+        {
+          method: 'POST',
+          headers: {
+            'Authorization': `Bearer ${session?.access_token}`,
+          },
+          body: formData,
+        }
+      );
+
+      if (response.ok) {
+        const data = await response.json();
+        attachments.push(data.attachment);
+      }
+    }
+
+    setSelectedFiles([]);
+    return attachments;
+  };
+
   const handleSend = async () => {
-    if (!input.trim() || isLoading) return;
+    if ((!input.trim() && selectedFiles.length === 0) || isLoading) return;
 
     const userMessage = input.trim();
     setInput("");
@@ -114,12 +170,26 @@ export function ChatInterface({ userId, conversationId, onConversationCreated }:
         onConversationCreated(convId);
       }
 
-      // Save user message
-      await saveMessage(convId, 'user', userMessage);
+      // Save user message and get message ID
+      const { data: userMsgData } = await supabase
+        .from('messages')
+        .insert({
+          conversation_id: convId,
+          role: 'user',
+          content: userMessage || '(File attachment)',
+        })
+        .select()
+        .single();
 
-      // Call streaming edge function
+      // Upload files if any
+      if (selectedFiles.length > 0 && userMsgData) {
+        await uploadFiles(convId, userMsgData.id);
+      }
+
+      // Call streaming edge function (use model-router for advanced features)
+      const endpoint = selectedModel || fusionEnabled ? 'model-router' : 'chat-stream';
       const response = await fetch(
-        `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/chat-stream`,
+        `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/${endpoint}`,
         {
           method: 'POST',
           headers: {
@@ -127,7 +197,9 @@ export function ChatInterface({ userId, conversationId, onConversationCreated }:
             'Authorization': `Bearer ${import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY}`,
           },
           body: JSON.stringify({
-            messages: [...messages, { role: 'user', content: userMessage }],
+            messages: [...messages.map(m => ({ role: m.role, content: m.content })), { role: 'user', content: userMessage }],
+            preferredModel: selectedModel,
+            enableFusion: fusionEnabled,
           }),
         }
       );
@@ -195,18 +267,40 @@ export function ChatInterface({ userId, conversationId, onConversationCreated }:
   return (
     <main className="flex-1 flex flex-col h-screen">
       {/* Header */}
-      <header className="h-16 border-b border-border/50 flex items-center px-6 glass backdrop-blur-xl">
-        <SidebarTrigger className="mr-4" />
+      <header className="h-16 border-b border-border/50 flex items-center justify-between px-6 glass backdrop-blur-xl">
         <div className="flex items-center gap-3">
+          <SidebarTrigger />
           <div className="w-8 h-8 bg-gradient-primary rounded-lg flex items-center justify-center animate-neural-pulse">
             <Sparkles className="w-4 h-4 text-white" />
           </div>
           <div>
-            <h1 className="font-semibold">Lucy AI</h1>
+            <h1 className="font-semibold">{conversationTitle}</h1>
             <p className="text-xs text-muted-foreground">Powered by advanced intelligence</p>
           </div>
         </div>
+        <div className="flex items-center gap-2">
+          <Button variant="ghost" size="sm" onClick={() => setShowSearch(true)}>
+            <Search className="w-4 h-4" />
+          </Button>
+          {conversationId && (
+            <Button variant="ghost" size="sm" onClick={() => setShowExport(true)}>
+              <Download className="w-4 h-4" />
+            </Button>
+          )}
+          <Button variant="ghost" size="sm" onClick={() => setShowModelSelector(!showModelSelector)}>
+            <Settings2 className="w-4 h-4" />
+          </Button>
+        </div>
       </header>
+
+      {showModelSelector && (
+        <ModelSelector
+          selectedModel={selectedModel}
+          onModelChange={setSelectedModel}
+          fusionEnabled={fusionEnabled}
+          onFusionToggle={setFusionEnabled}
+        />
+      )}
 
       {/* Messages */}
       <ScrollArea className="flex-1 px-6 py-8">
@@ -255,7 +349,12 @@ export function ChatInterface({ userId, conversationId, onConversationCreated }:
 
       {/* Input */}
       <div className="border-t border-border/50 p-6 glass backdrop-blur-xl">
-        <div className="max-w-4xl mx-auto">
+        <div className="max-w-4xl mx-auto space-y-3">
+          <FileUploadZone
+            selectedFiles={selectedFiles}
+            onFilesSelected={(files) => setSelectedFiles([...selectedFiles, ...files])}
+            onRemoveFile={(index) => setSelectedFiles(selectedFiles.filter((_, i) => i !== index))}
+          />
           <div className="relative">
             <Textarea
               value={input}
@@ -267,7 +366,7 @@ export function ChatInterface({ userId, conversationId, onConversationCreated }:
             />
             <Button
               onClick={handleSend}
-              disabled={!input.trim() || isLoading}
+              disabled={(!input.trim() && selectedFiles.length === 0) || isLoading}
               size="icon"
               className="absolute bottom-2 right-2 bg-gradient-primary hover:opacity-90 transition-opacity"
             >
@@ -278,11 +377,29 @@ export function ChatInterface({ userId, conversationId, onConversationCreated }:
               )}
             </Button>
           </div>
-          <p className="text-xs text-muted-foreground mt-2 text-center">
+          <p className="text-xs text-muted-foreground text-center">
             Press Enter to send, Shift+Enter for new line
           </p>
         </div>
       </div>
+
+      <SearchModal
+        open={showSearch}
+        onOpenChange={setShowSearch}
+        onSelectConversation={(id) => {
+          onConversationCreated(id);
+          setShowSearch(false);
+        }}
+      />
+
+      {conversationId && (
+        <ExportDialog
+          open={showExport}
+          onOpenChange={setShowExport}
+          conversationId={conversationId}
+          conversationTitle={conversationTitle}
+        />
+      )}
     </main>
   );
 }

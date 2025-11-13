@@ -25,9 +25,13 @@ import {
   Moon,
   Sun,
   Settings,
-  Shield
+  Shield,
+  Folder,
+  Tag as TagIcon
 } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
+import { SettingsModal } from "./SettingsModal";
+import { TagManager } from "./TagManager";
 
 interface ChatSidebarProps {
   userId: string;
@@ -42,6 +46,10 @@ export function ChatSidebar({ userId, currentConversationId, onConversationSelec
   const [searchQuery, setSearchQuery] = useState("");
   const [isDark, setIsDark] = useState(false);
   const [isAdmin, setIsAdmin] = useState(false);
+  const [showSettings, setShowSettings] = useState(false);
+  const [editingTags, setEditingTags] = useState<string | null>(null);
+  const [folders, setFolders] = useState<any[]>([]);
+  const [selectedFolder, setSelectedFolder] = useState<string | null>(null);
 
   useEffect(() => {
     // Check theme
@@ -51,8 +59,9 @@ export function ChatSidebar({ userId, currentConversationId, onConversationSelec
     // Check if user is admin
     checkAdminStatus();
 
-    // Load conversations
+    // Load conversations and folders
     loadConversations();
+    loadFolders();
 
     // Set up realtime subscription
     const channel = supabase
@@ -89,16 +98,35 @@ export function ChatSidebar({ userId, currentConversationId, onConversationSelec
     }
   };
 
-  const loadConversations = async () => {
-    const { data, error } = await supabase
-      .from('conversations')
+  const loadFolders = async () => {
+    const { data } = await supabase
+      .from('folders')
       .select('*')
       .eq('user_id', userId)
-      .order('updated_at', { ascending: false });
+      .order('position');
+    if (data) setFolders(data);
+  };
 
-    if (data) {
-      setConversations(data);
+  const loadConversations = async () => {
+    let query = supabase
+      .from('conversations')
+      .select('*')
+      .eq('user_id', userId);
+
+    if (selectedFolder) {
+      query = query.eq('folder_id', selectedFolder);
     }
+
+    const { data } = await query.order('updated_at', { ascending: false });
+    if (data) setConversations(data);
+  };
+
+  const updateConversationTags = async (convId: string, tags: string[]) => {
+    await supabase
+      .from('conversations')
+      .update({ tags })
+      .eq('id', convId);
+    loadConversations();
   };
 
   const handleNewChat = () => {
@@ -120,7 +148,8 @@ export function ChatSidebar({ userId, currentConversationId, onConversationSelec
   };
 
   const filteredConversations = conversations.filter(conv =>
-    conv.title.toLowerCase().includes(searchQuery.toLowerCase())
+    conv.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
+    conv.tags?.some((tag: string) => tag.toLowerCase().includes(searchQuery.toLowerCase()))
   );
 
   return (
@@ -158,8 +187,38 @@ export function ChatSidebar({ userId, currentConversationId, onConversationSelec
         </div>
 
         <ScrollArea className="flex-1">
+          {folders.length > 0 && (
+            <SidebarGroup>
+              <SidebarGroupLabel>Folders</SidebarGroupLabel>
+              <SidebarGroupContent>
+                <SidebarMenu>
+                  <SidebarMenuItem>
+                    <SidebarMenuButton
+                      onClick={() => setSelectedFolder(null)}
+                      isActive={selectedFolder === null}
+                    >
+                      <Folder className="w-4 h-4 mr-2" />
+                      All Conversations
+                    </SidebarMenuButton>
+                  </SidebarMenuItem>
+                  {folders.map((folder) => (
+                    <SidebarMenuItem key={folder.id}>
+                      <SidebarMenuButton
+                        onClick={() => setSelectedFolder(folder.id)}
+                        isActive={selectedFolder === folder.id}
+                      >
+                        <Folder className="w-4 h-4 mr-2" />
+                        {folder.name}
+                      </SidebarMenuButton>
+                    </SidebarMenuItem>
+                  ))}
+                </SidebarMenu>
+              </SidebarGroupContent>
+            </SidebarGroup>
+          )}
+
           <SidebarGroup>
-            <SidebarGroupLabel>Recent Conversations</SidebarGroupLabel>
+            <SidebarGroupLabel>Conversations</SidebarGroupLabel>
             <SidebarGroupContent>
               <SidebarMenu>
                 {filteredConversations.length === 0 ? (
@@ -169,14 +228,25 @@ export function ChatSidebar({ userId, currentConversationId, onConversationSelec
                 ) : (
                   filteredConversations.map((conversation) => (
                     <SidebarMenuItem key={conversation.id}>
-                      <SidebarMenuButton
-                        onClick={() => onConversationSelect(conversation.id)}
-                        isActive={currentConversationId === conversation.id}
-                        className="w-full justify-start truncate"
-                      >
-                        <MessageSquarePlus className="w-4 h-4 mr-2 flex-shrink-0" />
-                        <span className="truncate">{conversation.title}</span>
-                      </SidebarMenuButton>
+                      <div className="w-full">
+                        <SidebarMenuButton
+                          onClick={() => onConversationSelect(conversation.id)}
+                          isActive={currentConversationId === conversation.id}
+                          className="w-full justify-start"
+                        >
+                          <MessageSquarePlus className="w-4 h-4 mr-2 flex-shrink-0" />
+                          <span className="truncate flex-1">{conversation.title}</span>
+                        </SidebarMenuButton>
+                        {conversation.tags && conversation.tags.length > 0 && (
+                          <div className="px-4 py-1 flex flex-wrap gap-1">
+                            {conversation.tags.slice(0, 3).map((tag: string) => (
+                              <span key={tag} className="text-xs px-2 py-0.5 bg-primary/10 text-primary rounded">
+                                {tag}
+                              </span>
+                            ))}
+                          </div>
+                        )}
+                      </div>
                     </SidebarMenuItem>
                   ))
                 )}
@@ -197,6 +267,14 @@ export function ChatSidebar({ userId, currentConversationId, onConversationSelec
             Admin Dashboard
           </Button>
         )}
+        <Button
+          variant="outline"
+          className="w-full justify-start"
+          onClick={() => setShowSettings(true)}
+        >
+          <Settings className="w-4 h-4 mr-2" />
+          Settings
+        </Button>
         <Button
           variant="outline"
           className="w-full justify-start"
@@ -223,6 +301,8 @@ export function ChatSidebar({ userId, currentConversationId, onConversationSelec
           Sign Out
         </Button>
       </SidebarFooter>
+
+      <SettingsModal open={showSettings} onOpenChange={setShowSettings} />
     </Sidebar>
   );
 }

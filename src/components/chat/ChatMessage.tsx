@@ -2,9 +2,13 @@ import { User, Sparkles } from "lucide-react";
 import ReactMarkdown from "react-markdown";
 import { Prism as SyntaxHighlighter } from "react-syntax-highlighter";
 import { vscDarkPlus } from "react-syntax-highlighter/dist/esm/styles/prism";
+import { FilePreview } from "./FilePreview";
+import { useEffect, useState } from "react";
+import { supabase } from "@/integrations/supabase/client";
 
 interface ChatMessageProps {
   message: {
+    id?: string;
     role: string;
     content: string;
     created_at: string;
@@ -14,6 +18,22 @@ interface ChatMessageProps {
 
 export function ChatMessage({ message, isStreaming }: ChatMessageProps) {
   const isUser = message.role === 'user';
+  const [attachments, setAttachments] = useState<any[]>([]);
+
+  useEffect(() => {
+    if (message.id) {
+      loadAttachments();
+    }
+  }, [message.id]);
+
+  const loadAttachments = async () => {
+    if (!message.id) return;
+    const { data } = await supabase
+      .from('attachments')
+      .select('*')
+      .eq('message_id', message.id);
+    if (data) setAttachments(data);
+  };
 
   return (
     <div className={`flex gap-4 ${isUser ? 'justify-end' : 'justify-start'}`}>
@@ -28,9 +48,9 @@ export function ChatMessage({ message, isStreaming }: ChatMessageProps) {
           rounded-2xl px-4 py-3
           ${isUser 
             ? 'bg-gradient-primary text-white ml-auto' 
-            : 'glass-card'
+            : 'glass border border-border/50'
           }
-          ${isStreaming ? 'animate-pulse-glow' : ''}
+          ${isStreaming ? 'animate-pulse' : ''}
         `}>
           {isUser ? (
             <p className="whitespace-pre-wrap break-words">{message.content}</p>
@@ -61,6 +81,10 @@ export function ChatMessage({ message, isStreaming }: ChatMessageProps) {
                 {message.content}
               </ReactMarkdown>
             </div>
+          )}
+
+          {attachments.length > 0 && (
+            <FilePreview attachments={attachments} />
           )}
         </div>
         {!isUser && !isStreaming && (

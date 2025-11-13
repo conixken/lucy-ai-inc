@@ -42,9 +42,9 @@ export function SearchModal({ open, onOpenChange, onSelectConversation }: Search
   const performSearch = async (searchQuery: string) => {
     setIsSearching(true);
     try {
-      const { data, error } = await supabase.rpc('search_messages', {
+      const { data, error } = await supabase.rpc('search_messages' as any, {
         search_query: searchQuery,
-      });
+      }) as { data: SearchResult[] | null; error: any };
 
       if (error) throw error;
       setResults(data || []);

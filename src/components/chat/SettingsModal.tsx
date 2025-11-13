@@ -59,7 +59,7 @@ export function SettingsModal({ open, onOpenChange }: SettingsModalProps) {
       if (error) throw error;
 
       if (data?.preferences) {
-        setPreferences(data.preferences as Preferences);
+        setPreferences(data.preferences as unknown as Preferences);
       }
     } catch (error) {
       console.error('Error loading preferences:', error);
@@ -74,7 +74,7 @@ export function SettingsModal({ open, onOpenChange }: SettingsModalProps) {
 
       const { error } = await supabase
         .from('profiles')
-        .update({ preferences })
+        .update({ preferences: preferences as any })
         .eq('id', user.id);
 
       if (error) throw error;
