@@ -39,8 +39,9 @@ export const Footer = () => {
           <div>
             <h3 className="text-white font-semibold mb-4">Product</h3>
             <ul className="space-y-2">
-              <li><a href="#features" className="text-white/70 hover:text-white transition-colors">Features</a></li>
-              <li><a href="#pricing" className="text-white/70 hover:text-white transition-colors">Pricing</a></li>
+              <li><a href="/features" className="text-white/70 hover:text-white transition-colors">Features</a></li>
+              <li><a href="/pricing" className="text-white/70 hover:text-white transition-colors">Pricing</a></li>
+              <li><a href="/tools" className="text-white/70 hover:text-white transition-colors">Tools</a></li>
               <li><a href="/chat" className="text-white/70 hover:text-white transition-colors">Try Free</a></li>
               <li><a href="/analytics" className="text-white/70 hover:text-white transition-colors">Analytics</a></li>
             </ul>
@@ -50,8 +51,9 @@ export const Footer = () => {
           <div>
             <h3 className="text-white font-semibold mb-4">Company</h3>
             <ul className="space-y-2">
+              <li><a href="/launch" className="text-white/70 hover:text-white transition-colors">Launch</a></li>
+              <li><a href="/blog" className="text-white/70 hover:text-white transition-colors">Blog</a></li>
               <li><a href="#" className="text-white/70 hover:text-white transition-colors">About</a></li>
-              <li><a href="#" className="text-white/70 hover:text-white transition-colors">Blog</a></li>
               <li><a href="#" className="text-white/70 hover:text-white transition-colors">Careers</a></li>
               <li><a href="#" className="text-white/70 hover:text-white transition-colors">Contact</a></li>
             </ul>
