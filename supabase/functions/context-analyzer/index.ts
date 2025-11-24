@@ -33,12 +33,30 @@ serve(async (req) => {
 
     console.log('Analyzing context for conversation:', conversationId);
 
+    // Get current date/time for temporal context
+    const now = new Date();
+    const currentYear = now.getFullYear();
+    const currentDateTime = now.toLocaleString('en-US', { 
+      year: 'numeric', 
+      month: 'long', 
+      day: 'numeric',
+      hour: '2-digit',
+      minute: '2-digit'
+    });
+
     // Build conversation summary
     const conversationText = messages.map((m: any) => 
       `${m.role}: ${m.content}`
     ).join('\n\n');
 
-    const analysisPrompt = `Analyze this conversation and extract:
+    const analysisPrompt = `You are analyzing a conversation with 2025-level modern intelligence.
+
+**CURRENT CONTEXT:**
+• Date/Time: ${currentDateTime}
+• Year: ${currentYear}
+• Knowledge cutoff: November 2025
+
+Analyze this conversation and extract:
 1. Key topics discussed
 2. User preferences or patterns
 3. Important facts or context to remember
@@ -70,7 +88,11 @@ ${conversationText.substring(0, 4000)}`;
         messages: [
           {
             role: 'system',
-            content: 'You are a context analyzer that extracts key insights from conversations. Respond only with valid JSON.'
+            content: `You are a context analyzer with 2025-level modern intelligence that extracts key insights from conversations.
+
+TEMPORAL AWARENESS: Current year is ${currentYear}. Current date/time is ${currentDateTime}. Use present-day context when analyzing user needs and preferences.
+
+Respond only with valid JSON.`
           },
           {
             role: 'user',
