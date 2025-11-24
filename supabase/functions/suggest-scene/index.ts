@@ -11,12 +11,39 @@ serve(async (req) => {
   }
 
   try {
-    const { chatContext, currentMood } = await req.json();
+    const { chatContext, currentMood, location, timeOfDay } = await req.json();
 
     const LOVABLE_API_KEY = Deno.env.get("LOVABLE_API_KEY");
     if (!LOVABLE_API_KEY) {
       throw new Error("LOVABLE_API_KEY not configured");
     }
+
+    // Build enhanced context with location and time
+    let enhancedContext = `Chat context: "${chatContext}". Current mood: "${currentMood}".`;
+    
+    if (timeOfDay) {
+      enhancedContext += ` Time of day: ${timeOfDay}.`;
+    }
+    
+    if (location?.weather) {
+      enhancedContext += ` Current weather: ${location.weather}.`;
+    }
+    
+    if (location?.season) {
+      enhancedContext += ` Season: ${location.season}.`;
+    }
+
+    // Time-based recommendations
+    const timeBasedScenes = {
+      morning: ['sunrise', 'forest', 'mountains', 'nature'],
+      afternoon: ['ocean', 'beach', 'nature', 'mountains'],
+      evening: ['sunset', 'rain', 'ocean', 'beach'],
+      night: ['stars', 'aurora', 'night', 'rain']
+    };
+
+    const sceneOptions = timeOfDay && timeBasedScenes[timeOfDay as keyof typeof timeBasedScenes]
+      ? timeBasedScenes[timeOfDay as keyof typeof timeBasedScenes]
+      : ['nature', 'rain', 'ocean', 'forest', 'night', 'mountains', 'beach', 'sunset', 'aurora', 'stars'];
 
     // Analyze chat context and suggest appropriate scene
     const aiResponse = await fetch("https://ai.gateway.lovable.dev/v1/chat/completions", {
@@ -30,11 +57,11 @@ serve(async (req) => {
         messages: [
           {
             role: "system",
-            content: "You are an ambient scene recommendation expert. Based on conversation context and mood, suggest appropriate background scenes."
+            content: "You are an ambient scene recommendation expert. Consider context, mood, time of day, weather, and season to suggest the perfect immersive background scene."
           },
           {
             role: "user",
-            content: `Given this chat context: "${chatContext}" and current mood: "${currentMood}", suggest the most appropriate background scene from these options: nature, rain, ocean, forest, night, mountains, beach, sunset, aurora, stars. Respond with just the scene name.`
+            content: `${enhancedContext} Suggest the most appropriate scene from: ${sceneOptions.join(', ')}. Consider emotional tone, activity level, and environmental factors. Respond with just the scene name.`
           }
         ],
       }),

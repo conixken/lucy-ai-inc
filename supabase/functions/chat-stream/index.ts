@@ -57,14 +57,62 @@ serve(async (req) => {
   }
 
   try {
-    const { messages } = await req.json();
+    const { messages, conversationId } = await req.json();
     const LOVABLE_API_KEY = Deno.env.get('LOVABLE_API_KEY');
+    const SUPABASE_URL = Deno.env.get('SUPABASE_URL')!;
+    const SUPABASE_SERVICE_ROLE_KEY = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!;
 
     if (!LOVABLE_API_KEY) {
       throw new Error('LOVABLE_API_KEY is not configured');
     }
 
     console.log('Starting chat stream with', messages.length, 'messages');
+
+    // Get last user message for tool orchestration
+    const lastUserMessage = messages.filter((m: any) => m.role === 'user').pop();
+    let toolResults = null;
+
+    if (lastUserMessage?.content) {
+      try {
+        // Check if tools might be useful for this query
+        const toolResponse = await fetch(`${SUPABASE_URL}/functions/v1/tool-orchestrator`, {
+          method: 'POST',
+          headers: {
+            'Authorization': `Bearer ${SUPABASE_SERVICE_ROLE_KEY}`,
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            query: lastUserMessage.content,
+            messages: messages.slice(-5),
+            autoExecute: true
+          }),
+        });
+
+        if (toolResponse.ok) {
+          const toolData = await toolResponse.json();
+          if (toolData.results && toolData.results.length > 0) {
+            toolResults = toolData;
+            console.log('Tools executed:', toolData.toolCalls.map((t: any) => t.tool).join(', '));
+          }
+        }
+      } catch (toolError) {
+        console.error('Tool orchestration error:', toolError);
+        // Continue without tools if they fail
+      }
+    }
+
+    // Build enhanced messages with tool results
+    const enhancedMessages = [...messages];
+    if (toolResults && toolResults.results.length > 0) {
+      const toolContext = toolResults.results.map((r: any) => 
+        `[${r.tool}]: ${r.error ? `Error: ${r.error}` : JSON.stringify(r.result)}`
+      ).join('\n');
+      
+      enhancedMessages.push({
+        role: 'system',
+        content: `Tool results available:\n${toolContext}\n\nIncorporate these results naturally into your response.`
+      });
+    }
 
     const response = await fetch('https://ai.gateway.lovable.dev/v1/chat/completions', {
       method: 'POST',
@@ -76,7 +124,7 @@ serve(async (req) => {
         model: 'google/gemini-2.5-flash',
         messages: [
           { role: 'system', content: SYSTEM_PROMPT },
-          ...messages
+          ...enhancedMessages
         ],
         stream: true,
       }),

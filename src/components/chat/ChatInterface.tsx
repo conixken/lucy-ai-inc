@@ -12,6 +12,14 @@ import { ExportDialog } from "./ExportDialog";
 import { SearchModal } from "./SearchModal";
 import { ModelSelector } from "./ModelSelector";
 import { LucyLogo } from "@/components/branding/LucyLogo";
+import { ToolResultDisplay } from "./ToolResultDisplay";
+import { ProactiveSuggestions } from "./ProactiveSuggestions";
+import { ContextIndicator } from "./ContextIndicator";
+import { MemoryPanel } from "./MemoryPanel";
+import { SmartSceneSuggestion } from "./SmartSceneSuggestion";
+import { useSmartSceneSuggestion } from "@/hooks/useSmartSceneSuggestion";
+import { useMemoryManager } from "@/hooks/useMemoryManager";
+import { useContextAnalyzer } from "@/hooks/useContextAnalyzer";
 
 interface ChatInterfaceProps {
   userId: string;
@@ -34,6 +42,11 @@ export function ChatInterface({ userId, conversationId, onConversationCreated }:
   const [selectedModel, setSelectedModel] = useState<string | null>(null);
   const [fusionEnabled, setFusionEnabled] = useState(false);
   const [showModelSelector, setShowModelSelector] = useState(false);
+  const [toolResults, setToolResults] = useState<any>(null);
+  
+  const { suggestedScene } = useSmartSceneSuggestion(conversationId);
+  const { memories, storeMemory } = useMemoryManager(userId);
+  const { analyzeContext } = useContextAnalyzer(conversationId);
 
   useEffect(() => {
     if (conversationId) {
@@ -195,6 +208,7 @@ export function ChatInterface({ userId, conversationId, onConversationCreated }:
     const reader = response.body?.getReader();
     const decoder = new TextDecoder();
     let fullResponse = "";
+    let receivedToolResults = false;
 
     if (reader) {
       while (true) {
@@ -211,6 +225,13 @@ export function ChatInterface({ userId, conversationId, onConversationCreated }:
 
             try {
               const parsed = JSON.parse(data);
+              
+              // Check for tool results in metadata
+              if (parsed.toolResults && !receivedToolResults) {
+                setToolResults(parsed.toolResults);
+                receivedToolResults = true;
+              }
+              
               const content = parsed.choices?.[0]?.delta?.content;
               if (content) {
                 fullResponse += content;
@@ -228,6 +249,18 @@ export function ChatInterface({ userId, conversationId, onConversationCreated }:
     if (fullResponse) {
       await saveMessage(convId, 'assistant', fullResponse);
       setStreamingMessage("");
+      await loadMessages();
+      
+      // Analyze context after conversation
+      setTimeout(() => {
+        const allMessages = [...messages, { role: 'user', content: input }, { role: 'assistant', content: fullResponse }];
+        analyzeContext(allMessages.map(m => ({ role: m.role, content: m.content })));
+      }, 1000);
+      
+      // Auto-store important memories
+      if (fullResponse.length > 100 && (fullResponse.includes('remember') || fullResponse.includes('important'))) {
+        storeMemory(fullResponse.slice(0, 200), 'conversation', 0.7);
+      }
     }
   };
 
@@ -355,6 +388,7 @@ export function ChatInterface({ userId, conversationId, onConversationCreated }:
           </div>
         </div>
         <div className="flex items-center gap-2">
+          <MemoryPanel userId={userId} />
           <Button variant="ghost" size="sm" onClick={() => setShowSearch(true)}>
             <Search className="w-4 h-4" />
           </Button>
@@ -368,6 +402,12 @@ export function ChatInterface({ userId, conversationId, onConversationCreated }:
           </Button>
         </div>
       </header>
+
+      <SmartSceneSuggestion
+        suggestedScene={suggestedScene}
+        onApply={(scene) => console.log('Apply scene:', scene)}
+        onDismiss={() => {}}
+      />
 
       {showModelSelector && (
         <ModelSelector
@@ -395,9 +435,13 @@ export function ChatInterface({ userId, conversationId, onConversationCreated }:
         )}
 
         <div className="max-w-4xl mx-auto space-y-6">
+          {conversationId && <ContextIndicator conversationId={conversationId} />}
+          
           {messages.map((message) => (
             <ChatMessage key={message.id} message={message} />
           ))}
+          
+          {toolResults && <ToolResultDisplay results={toolResults.results} />}
           
           {streamingMessage && (
             <ChatMessage 
@@ -415,6 +459,16 @@ export function ChatInterface({ userId, conversationId, onConversationCreated }:
               <Loader2 className="w-4 h-4 animate-spin" />
               <span>Lucy is thinking...</span>
             </div>
+          )}
+          
+          {conversationId && !isLoading && messages.length > 0 && (
+            <ProactiveSuggestions 
+              conversationId={conversationId}
+              onSelectSuggestion={(text) => {
+                setInput(text);
+                setTimeout(() => handleSend(), 100);
+              }}
+            />
           )}
           
           <div ref={scrollRef} />
