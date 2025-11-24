@@ -4,19 +4,18 @@ import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { ScrollArea } from "@/components/ui/scroll-area";
 import { 
   Shield, 
   Users, 
   MessageSquare, 
   TrendingUp, 
-  ArrowLeft,
-  Activity,
-  Database,
-  Clock
+  ArrowLeft
 } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { SystemDashboard } from "@/components/admin/SystemDashboard";
+import { UserManagement } from "@/components/admin/UserManagement";
+import { FeatureToggles } from "@/components/admin/FeatureToggles";
+import { AuditLogs } from "@/components/admin/AuditLogs";
 
 const Admin = () => {
   const navigate = useNavigate();
@@ -29,7 +28,6 @@ const Admin = () => {
     totalMessages: 0,
     activeUsers: 0,
   });
-  const [users, setUsers] = useState<any[]>([]);
 
   useEffect(() => {
     checkAdminAccess();
@@ -63,7 +61,6 @@ const Admin = () => {
 
     setIsAdmin(true);
     loadStats();
-    loadUsers();
     setIsLoading(false);
   };
 
@@ -89,18 +86,6 @@ const Admin = () => {
       totalMessages: msgCount || 0,
       activeUsers: userCount || 0,
     });
-  };
-
-  const loadUsers = async () => {
-    const { data } = await supabase
-      .from('profiles')
-      .select('*')
-      .order('created_at', { ascending: false })
-      .limit(50);
-
-    if (data) {
-      setUsers(data);
-    }
   };
 
   if (isLoading) {
@@ -172,7 +157,7 @@ const Admin = () => {
           <Card className="glass-card">
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
               <CardTitle className="text-sm font-medium">Total Messages</CardTitle>
-              <Activity className="h-4 w-4 text-muted-foreground" />
+              <TrendingUp className="h-4 w-4 text-muted-foreground" />
             </CardHeader>
             <CardContent>
               <div className="text-2xl font-bold">{stats.totalMessages}</div>
@@ -185,7 +170,7 @@ const Admin = () => {
           <Card className="glass-card">
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
               <CardTitle className="text-sm font-medium">Active Users</CardTitle>
-              <TrendingUp className="h-4 w-4 text-muted-foreground" />
+              <Shield className="h-4 w-4 text-muted-foreground" />
             </CardHeader>
             <CardContent>
               <div className="text-2xl font-bold">{stats.activeUsers}</div>
@@ -197,113 +182,28 @@ const Admin = () => {
         </div>
 
         {/* Tabs */}
-        <Tabs defaultValue="users" className="space-y-4">
+        <Tabs defaultValue="overview" className="space-y-4">
           <TabsList className="glass">
+            <TabsTrigger value="overview">Overview</TabsTrigger>
             <TabsTrigger value="users">Users</TabsTrigger>
-            <TabsTrigger value="activity">Activity</TabsTrigger>
-            <TabsTrigger value="system">System</TabsTrigger>
+            <TabsTrigger value="features">Features</TabsTrigger>
+            <TabsTrigger value="logs">Audit Logs</TabsTrigger>
           </TabsList>
 
+          <TabsContent value="overview" className="space-y-4">
+            <SystemDashboard />
+          </TabsContent>
+
           <TabsContent value="users" className="space-y-4">
-            <Card className="glass-card">
-              <CardHeader>
-                <CardTitle>Recent Users</CardTitle>
-                <CardDescription>Latest registered users in the system</CardDescription>
-              </CardHeader>
-              <CardContent>
-                <ScrollArea className="h-[400px]">
-                  <div className="space-y-4">
-                    {users.map((user) => (
-                      <div
-                        key={user.id}
-                        className="flex items-center justify-between p-4 rounded-lg border border-border/50 hover:bg-muted/50 transition-colors"
-                      >
-                        <div className="flex items-center gap-4">
-                          <div className="w-10 h-10 rounded-full bg-gradient-primary flex items-center justify-center text-white font-semibold">
-                            {user.name?.charAt(0).toUpperCase() || user.email.charAt(0).toUpperCase()}
-                          </div>
-                          <div>
-                            <p className="font-medium">{user.name || 'Unknown'}</p>
-                            <p className="text-sm text-muted-foreground">{user.email}</p>
-                          </div>
-                        </div>
-                        <div className="text-right">
-                          <p className="text-sm text-muted-foreground">
-                            Joined {new Date(user.created_at).toLocaleDateString()}
-                          </p>
-                        </div>
-                      </div>
-                    ))}
-                  </div>
-                </ScrollArea>
-              </CardContent>
-            </Card>
+            <UserManagement />
           </TabsContent>
 
-          <TabsContent value="activity" className="space-y-4">
-            <Card className="glass-card">
-              <CardHeader>
-                <CardTitle>System Activity</CardTitle>
-                <CardDescription>Real-time system events and logs</CardDescription>
-              </CardHeader>
-              <CardContent>
-                <div className="text-center py-12 text-muted-foreground">
-                  <Activity className="w-12 h-12 mx-auto mb-4 opacity-50" />
-                  <p>Activity monitoring coming soon</p>
-                </div>
-              </CardContent>
-            </Card>
+          <TabsContent value="features" className="space-y-4">
+            <FeatureToggles />
           </TabsContent>
 
-          <TabsContent value="system" className="space-y-4">
-            <Card className="glass-card">
-              <CardHeader>
-                <CardTitle>System Health</CardTitle>
-                <CardDescription>Backend status and performance metrics</CardDescription>
-              </CardHeader>
-              <CardContent>
-                <div className="space-y-4">
-                  <div className="flex items-center justify-between p-4 rounded-lg border border-border/50">
-                    <div className="flex items-center gap-3">
-                      <Database className="w-5 h-5 text-primary" />
-                      <div>
-                        <p className="font-medium">Database</p>
-                        <p className="text-sm text-muted-foreground">PostgreSQL</p>
-                      </div>
-                    </div>
-                    <div className="px-3 py-1 rounded-full bg-green-500/10 text-green-500 text-sm font-medium">
-                      Operational
-                    </div>
-                  </div>
-
-                  <div className="flex items-center justify-between p-4 rounded-lg border border-border/50">
-                    <div className="flex items-center gap-3">
-                      <Activity className="w-5 h-5 text-primary" />
-                      <div>
-                        <p className="font-medium">AI Gateway</p>
-                        <p className="text-sm text-muted-foreground">Lovable AI</p>
-                      </div>
-                    </div>
-                    <div className="px-3 py-1 rounded-full bg-green-500/10 text-green-500 text-sm font-medium">
-                      Active
-                    </div>
-                  </div>
-
-                  <div className="flex items-center justify-between p-4 rounded-lg border border-border/50">
-                    <div className="flex items-center gap-3">
-                      <Clock className="w-5 h-5 text-primary" />
-                      <div>
-                        <p className="font-medium">Uptime</p>
-                        <p className="text-sm text-muted-foreground">System availability</p>
-                      </div>
-                    </div>
-                    <div className="px-3 py-1 rounded-full bg-green-500/10 text-green-500 text-sm font-medium">
-                      99.9%
-                    </div>
-                  </div>
-                </div>
-              </CardContent>
-            </Card>
+          <TabsContent value="logs" className="space-y-4">
+            <AuditLogs />
           </TabsContent>
         </Tabs>
       </div>

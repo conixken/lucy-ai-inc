@@ -71,6 +71,30 @@ export type Database = {
         }
         Relationships: []
       }
+      app_settings: {
+        Row: {
+          created_at: string
+          id: string
+          setting_key: string
+          setting_value: Json
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          setting_key: string
+          setting_value?: Json
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          setting_key?: string
+          setting_value?: Json
+          updated_at?: string
+        }
+        Relationships: []
+      }
       attachments: {
         Row: {
           conversation_id: string
@@ -928,6 +952,7 @@ export type Database = {
         }
         Returns: boolean
       }
+      promote_admin_by_email: { Args: { user_email: string }; Returns: Json }
       search_messages: {
         Args: { search_query: string }
         Returns: {

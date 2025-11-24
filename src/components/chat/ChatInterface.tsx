@@ -3,7 +3,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { ScrollArea } from "@/components/ui/scroll-area";
-import { Send, Loader2, Search, Download, Upload, Settings2 } from "lucide-react";
+import { Send, Loader2, Search, Download, Upload, Settings2, Shield } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { ChatMessage } from "./ChatMessage";
 import { SidebarTrigger } from "@/components/ui/sidebar";
@@ -25,6 +25,9 @@ import { useMemoryManager } from "@/hooks/useMemoryManager";
 import { useContextAnalyzer } from "@/hooks/useContextAnalyzer";
 import { useReadingMode } from "@/hooks/useReadingMode";
 import { useStreamingSpeed } from "@/hooks/useStreamingSpeed";
+import { useAdminCheck } from "@/hooks/useAdminCheck";
+import { useNavigate } from "react-router-dom";
+import { Badge } from "@/components/ui/badge";
 
 interface ChatInterfaceProps {
   userId: string;
@@ -34,6 +37,8 @@ interface ChatInterfaceProps {
 
 export function ChatInterface({ userId, conversationId, onConversationCreated }: ChatInterfaceProps) {
   const { toast } = useToast();
+  const navigate = useNavigate();
+  const { isAdmin } = useAdminCheck();
   const [messages, setMessages] = useState<any[]>([]);
   const [input, setInput] = useState("");
   const [isLoading, setIsLoading] = useState(false);
@@ -397,6 +402,17 @@ export function ChatInterface({ userId, conversationId, onConversationCreated }:
           </div>
         </div>
         <div className="flex items-center gap-2">
+          {isAdmin && (
+            <Button 
+              variant="ghost" 
+              size="sm" 
+              onClick={() => navigate('/admin')}
+              className="glass-card border-primary/30 hover:shadow-glow-violet"
+            >
+              <Shield className="w-4 h-4 mr-2" />
+              <Badge variant="default" className="bg-gradient-primary">Admin</Badge>
+            </Button>
+          )}
           <ChatSettings
             readingMode={readingMode}
             setReadingMode={setReadingMode}

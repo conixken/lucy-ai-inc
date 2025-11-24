@@ -9,7 +9,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useToast } from "@/hooks/use-toast";
 import { LucyLogo } from "@/components/branding/LucyLogo";
 import { CosmicBackground } from "@/components/cosmic/CosmicBackground";
-import { X } from "lucide-react";
+import { X, ArrowLeft } from "lucide-react";
 
 const Auth = () => {
   const navigate = useNavigate();
@@ -18,6 +18,8 @@ const Auth = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [name, setName] = useState("");
+  const [showResetPassword, setShowResetPassword] = useState(false);
+  const [resetEmail, setResetEmail] = useState("");
 
   useEffect(() => {
     // Check if user is already logged in
@@ -116,6 +118,90 @@ const Auth = () => {
     }
   };
 
+  const handleResetPassword = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setIsLoading(true);
+
+    try {
+      const { error } = await supabase.auth.resetPasswordForEmail(resetEmail, {
+        redirectTo: `${window.location.origin}/auth`,
+      });
+
+      if (error) throw error;
+
+      toast({
+        title: "Reset email sent",
+        description: "Check your email for the password reset link.",
+      });
+      
+      setShowResetPassword(false);
+      setResetEmail("");
+    } catch (error: any) {
+      toast({
+        title: "Error",
+        description: error.message || "Failed to send reset email",
+        variant: "destructive",
+      });
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  if (showResetPassword) {
+    return (
+      <div className="min-h-screen flex items-center justify-center relative overflow-hidden">
+        <CosmicBackground />
+
+        <Card className="w-full max-w-md mx-4 glass-card-enhanced relative z-10 shadow-glow-violet">
+          <Button
+            variant="ghost"
+            size="icon"
+            onClick={() => setShowResetPassword(false)}
+            aria-label="Back"
+            className="absolute top-4 left-4 z-20 h-10 w-10 rounded-full glass-card border border-primary/30 hover:border-primary/60 hover:shadow-glow-violet hover:scale-105 transition-all duration-300 text-cosmic-silver hover:text-cosmic-gold"
+          >
+            <ArrowLeft className="h-5 w-5" />
+          </Button>
+
+          <CardHeader className="text-center space-y-3 pt-6">
+            <div className="flex justify-center">
+              <LucyLogo size="lg" showGlow />
+            </div>
+            <CardTitle className="text-3xl font-bold text-foreground">
+              Reset Password
+            </CardTitle>
+            <CardDescription className="text-base text-foreground/80">
+              Enter your email to receive a reset link
+            </CardDescription>
+          </CardHeader>
+          <CardContent>
+            <form onSubmit={handleResetPassword} className="space-y-4">
+              <div className="space-y-2">
+                <Label htmlFor="reset-email">Email</Label>
+                <Input
+                  id="reset-email"
+                  type="email"
+                  placeholder="you@example.com"
+                  value={resetEmail}
+                  onChange={(e) => setResetEmail(e.target.value)}
+                  required
+                  disabled={isLoading}
+                />
+              </div>
+              <Button
+                type="submit"
+                className="w-full bg-gradient-primary hover:opacity-95 transition-all shadow-lg hover:shadow-xl font-semibold border-2 border-white/20"
+                disabled={isLoading}
+              >
+                {isLoading ? "Sending..." : "Send Reset Link"}
+              </Button>
+            </form>
+          </CardContent>
+        </Card>
+      </div>
+    );
+  }
+
   return (
     <div className="min-h-screen flex items-center justify-center relative overflow-hidden">
       <CosmicBackground />
@@ -183,6 +269,14 @@ const Auth = () => {
                   disabled={isLoading}
                 >
                   {isLoading ? "Signing in..." : "Sign In"}
+                </Button>
+                <Button
+                  type="button"
+                  variant="ghost"
+                  className="w-full"
+                  onClick={() => setShowResetPassword(true)}
+                >
+                  Forgot password?
                 </Button>
               </form>
             </TabsContent>
