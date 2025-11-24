@@ -9,6 +9,7 @@ import { FAQ } from '@/components/landing/FAQ';
 import { Footer } from '@/components/landing/Footer';
 import { QuickActionLauncher } from '@/components/daily/QuickActionLauncher';
 import { UsageStreak } from '@/components/daily/UsageStreak';
+import { ShareButtons } from '@/components/share/ShareButtons';
 import { ParallaxEnvironment } from '@/components/effects/ParallaxEnvironment';
 import { useAmbientIntelligence } from '@/hooks/useAmbientIntelligence';
 
@@ -28,21 +29,27 @@ const Landing = () => {
   return (
     <>
       <SEOHead 
-        title="Lucy AI - Beyond Intelligence | Advanced AI Assistant"
-        description="Experience the future of AI with Lucy - featuring advanced reasoning, vision, memory, code execution, and real-time web search. Try free today!"
-        keywords="AI assistant, artificial intelligence, chat AI, Lucy AI, GPT-5, Gemini, multimodal AI, code execution, image generation"
-        canonical="https://lucy-ai.app"
+        title="Lucy AI — Your Intelligent Digital Companion"
+        description="Chat, explore, learn, create. Lucy AI is your next-generation personal AI companion built entirely on Lovable Cloud. Experience advanced AI reasoning, vision, memory, and creativity."
+        keywords="Lucy AI, AI assistant, digital companion, artificial intelligence, chat AI, personal AI, AI chatbot, intelligent assistant, LucyLounge"
+        canonical="https://lucylounge.org"
+        image="/og-default.png"
+        url="https://lucylounge.org"
+        type="website"
       />
       
       <ParallaxEnvironment mode={themeMode} intensity={0.5}>
         <div className="min-h-screen relative">
           <Hero />
           
-          {/* Quick Actions Section */}
+          {/* Quick Actions & Engagement Section */}
           <section className="relative z-10 py-12 px-4">
-            <div className="max-w-6xl mx-auto grid md:grid-cols-2 gap-6">
-              <QuickActionLauncher />
-              <UsageStreak />
+            <div className="max-w-6xl mx-auto space-y-6">
+              <div className="grid md:grid-cols-2 gap-6">
+                <QuickActionLauncher />
+                <UsageStreak />
+              </div>
+              <ShareButtons />
             </div>
           </section>
           

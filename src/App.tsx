@@ -4,6 +4,7 @@ import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
+import { HelmetProvider } from "react-helmet-async";
 import Landing from "./pages/Landing";
 import Pricing from "./pages/Pricing";
 import Features from "./pages/Features";
@@ -51,19 +52,20 @@ const App = () => {
 
   return (
     <QueryClientProvider client={queryClient}>
-      <TooltipProvider>
-        <Toaster />
-        <Sonner />
-        <ParallaxEnvironment mode="cosmic" intensity={0.5} />
-        <PerformanceMonitor />
-        {showIntro && <IntroScreen onComplete={handleIntroComplete} />}
-        <DailyGreeting />
-        <WakeScreen />
-        <InstallPrompt />
-        <OfflineBanner />
-        <div className={hasShownIntro ? 'animate-fade-in' : ''}>
-          <BrowserRouter>
-            <AnalyticsTracker />
+      <HelmetProvider>
+        <TooltipProvider>
+          <Toaster />
+          <Sonner />
+          <ParallaxEnvironment mode="cosmic" intensity={0.5} />
+          <PerformanceMonitor />
+          {showIntro && <IntroScreen onComplete={handleIntroComplete} />}
+          <DailyGreeting />
+          <WakeScreen />
+          <InstallPrompt />
+          <OfflineBanner />
+          <div className={hasShownIntro ? 'animate-fade-in' : ''}>
+            <BrowserRouter>
+              <AnalyticsTracker />
             <Routes>
               <Route path="/" element={<Landing />} />
               <Route path="/pricing" element={<Pricing />} />
@@ -85,6 +87,7 @@ const App = () => {
           </BrowserRouter>
         </div>
       </TooltipProvider>
+      </HelmetProvider>
     </QueryClientProvider>
   );
 };

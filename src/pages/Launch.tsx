@@ -4,7 +4,11 @@ import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
 import { ArrowLeft, ExternalLink, Twitter, Linkedin, Facebook, Star } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
-import { LucyAvatar } from '@/components/avatar/LucyAvatar';
+import { AdvancedLucyAvatar } from '@/components/avatar/AdvancedLucyAvatar';
+import { ParallaxEnvironment } from '@/components/effects/ParallaxEnvironment';
+import { HolographicCard } from '@/components/ui/HolographicCard';
+import { RippleButton } from '@/components/ui/RippleButton';
+import { ShareButtons } from '@/components/share/ShareButtons';
 
 const Launch = () => {
   const navigate = useNavigate();
@@ -19,78 +23,72 @@ const Launch = () => {
   return (
     <>
       <SEOHead 
-        title="Launch Day - Lucy AI | Join the AI Revolution"
-        description="Lucy AI is live on Product Hunt! Experience advanced AI with reasoning, vision, memory, and creativity. Join 10,000+ users already using Lucy AI."
-        keywords="Lucy AI launch, Product Hunt, AI assistant launch, new AI tool, AI revolution"
-        canonical="https://lucy-ai.app/launch"
+        title="Lucy AI Launch — Join the AI Revolution"
+        description="Be part of Lucy AI's public launch. Experience next-generation AI with advanced reasoning, vision, memory, and creativity. Try free today!"
+        keywords="Lucy AI launch, AI product launch, new AI assistant, AI revolution"
+        canonical="https://lucylounge.org/launch"
+        image="/og-launch.png"
+        url="https://lucylounge.org/launch"
       />
       
-      <div className="min-h-screen bg-gradient-primary relative overflow-hidden">
-        {/* Background effects */}
-        <div className="absolute inset-0 overflow-hidden pointer-events-none">
-          <div className="absolute top-1/4 left-1/4 w-96 h-96 bg-primary/20 rounded-full blur-3xl animate-pulse-glow" />
-          <div className="absolute bottom-1/4 right-1/4 w-96 h-96 bg-secondary/20 rounded-full blur-3xl animate-pulse-glow" style={{ animationDelay: '1s' }} />
-        </div>
-
-        <div className="absolute inset-0 bg-gradient-to-b from-black/20 to-black/30 pointer-events-none" />
-
-        <div className="relative z-10">
+      <ParallaxEnvironment mode="cosmic" intensity={0.5}>
+        <div className="min-h-screen relative">
           {/* Header */}
           <div className="container mx-auto px-4 py-8">
-            <Button
+            <RippleButton
               variant="ghost"
               className="text-white hover:bg-white/10"
               onClick={() => navigate('/')}
             >
               <ArrowLeft className="w-4 h-4 mr-2" />
               Back to Home
-            </Button>
+            </RippleButton>
           </div>
 
           {/* Hero Section */}
           <div className="container mx-auto px-4 py-12 text-center">
-            <div className="inline-block px-4 py-2 bg-accent text-accent-foreground rounded-full font-semibold mb-6 animate-pulse-glow">
-              🚀 Now Live on Product Hunt!
+            <div className="inline-block px-6 py-2 bg-accent/20 backdrop-blur-lg border border-accent/30 text-white rounded-full font-semibold mb-8 animate-pulse-glow">
+              🚀 Now Live!
             </div>
 
             <div className="flex justify-center mb-6">
-              <LucyAvatar size="xl" state="happy" />
+              <AdvancedLucyAvatar size="xl" state="excited" />
             </div>
 
-            <h1 className="text-5xl md:text-6xl font-bold text-white mb-6 text-shadow-strong">
-              Lucy AI is Live!
+            <h1 className="text-5xl md:text-7xl font-bold text-white mb-6 text-shadow-strong">
+              Lucy AI is Live! 🎉
             </h1>
-            <p className="text-xl text-white/90 max-w-2xl mx-auto mb-8 text-shadow-soft">
-              Join 10,000+ users experiencing the future of AI conversation
+            <p className="text-xl md:text-2xl text-white/90 max-w-2xl mx-auto mb-8 text-shadow-soft">
+              Join thousands experiencing the future of AI conversation
             </p>
 
             {/* Launch Stats */}
-            <div className="flex flex-wrap justify-center gap-8 mb-12">
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-6 mb-12 max-w-4xl mx-auto">
               {launchStats.map((stat, index) => (
-                <div key={index} className="text-center">
-                  <div className="text-3xl font-bold text-white">{stat.value}</div>
-                  <div className="text-white/80">{stat.label}</div>
-                </div>
+                <HolographicCard key={index} className="p-6 text-center">
+                  <div className="text-3xl font-bold bg-gradient-button bg-clip-text text-transparent mb-1">{stat.value}</div>
+                  <div className="text-white/80 text-sm">{stat.label}</div>
+                </HolographicCard>
               ))}
             </div>
 
             {/* CTA Buttons */}
             <div className="flex flex-col sm:flex-row gap-4 justify-center mb-12">
-              <Button
+              <RippleButton
                 size="lg"
-                className="bg-white text-primary hover:bg-white/95 font-semibold text-lg px-8 py-6"
+                variant="gradient"
                 onClick={() => navigate('/auth')}
               >
                 Try Lucy AI Free
-              </Button>
-              <Button
+              </RippleButton>
+              <RippleButton
                 size="lg"
-                className="bg-accent text-accent-foreground hover:bg-accent/90 font-semibold text-lg px-8 py-6"
+                variant="outline"
                 onClick={() => window.open('https://www.producthunt.com/posts/lucy-ai', '_blank')}
               >
                 <ExternalLink className="w-5 h-5 mr-2" />
                 View on Product Hunt
-              </Button>
+              </RippleButton>
             </div>
           </div>
 
@@ -101,91 +99,42 @@ const Launch = () => {
             </h2>
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-8 max-w-6xl mx-auto">
-              <Card className="p-2 bg-card/80 backdrop-blur-lg">
+              <HolographicCard className="p-4">
                 <img 
-                  src="/lucy-og-image.png" 
+                  src="/og-default.png" 
                   alt="Lucy AI Chat Interface"
-                  className="w-full h-auto rounded-lg"
+                  className="w-full h-auto rounded-lg mb-4"
                 />
-                <div className="p-4">
-                  <h3 className="font-semibold mb-2">Advanced Chat Interface</h3>
-                  <p className="text-sm text-muted-foreground">Real-time streaming with beautiful UI</p>
-                </div>
-              </Card>
+                <h3 className="font-semibold text-white mb-2">Advanced Chat Interface</h3>
+                <p className="text-sm text-white/70">Real-time streaming with beautiful UI</p>
+              </HolographicCard>
 
-              <Card className="p-2 bg-card/80 backdrop-blur-lg">
+              <HolographicCard className="p-4">
                 <img 
-                  src="/lucy-og-image.png" 
+                  src="/og-thinking.png" 
                   alt="Lucy AI Features"
-                  className="w-full h-auto rounded-lg"
+                  className="w-full h-auto rounded-lg mb-4"
                 />
-                <div className="p-4">
-                  <h3 className="font-semibold mb-2">Powerful Features</h3>
-                  <p className="text-sm text-muted-foreground">Vision, memory, code execution, and more</p>
-                </div>
-              </Card>
+                <h3 className="font-semibold text-white mb-2">Intelligent Thinking</h3>
+                <p className="text-sm text-white/70">Advanced reasoning and problem-solving</p>
+              </HolographicCard>
             </div>
           </div>
 
           {/* Social Sharing */}
           <div className="container mx-auto px-4 py-12">
-            <div className="max-w-2xl mx-auto text-center">
-              <h2 className="text-2xl font-bold text-white mb-6 text-shadow-strong">
-                Share Lucy AI with Your Network
-              </h2>
-
-              <div className="flex flex-wrap justify-center gap-4 mb-8">
-                <Button
-                  size="lg"
-                  className="bg-[#1DA1F2] hover:bg-[#1a8cd8] text-white"
-                  onClick={() => window.open('https://twitter.com/intent/tweet?text=Check out Lucy AI - Beyond Intelligence! 🚀&url=https://lucy-ai.app', '_blank')}
-                >
-                  <Twitter className="w-5 h-5 mr-2" />
-                  Share on Twitter
-                </Button>
-
-                <Button
-                  size="lg"
-                  className="bg-[#0077B5] hover:bg-[#006399] text-white"
-                  onClick={() => window.open('https://www.linkedin.com/sharing/share-offsite/?url=https://lucy-ai.app', '_blank')}
-                >
-                  <Linkedin className="w-5 h-5 mr-2" />
-                  Share on LinkedIn
-                </Button>
-
-                <Button
-                  size="lg"
-                  className="bg-[#1877F2] hover:bg-[#166fe5] text-white"
-                  onClick={() => window.open('https://www.facebook.com/sharer/sharer.php?u=https://lucy-ai.app', '_blank')}
-                >
-                  <Facebook className="w-5 h-5 mr-2" />
-                  Share on Facebook
-                </Button>
-              </div>
-
-              <div className="glass-card-enhanced p-8">
-                <Star className="w-12 h-12 mx-auto mb-4 text-accent" />
-                <h3 className="text-xl font-bold text-white mb-4">Love Lucy AI?</h3>
-                <p className="text-white/80 mb-6">
-                  Support us with an upvote on Product Hunt and help us reach more people!
-                </p>
-                <Button
-                  size="lg"
-                  variant="outline"
-                  className="border-white text-white hover:bg-white/10"
-                  onClick={() => window.open('https://www.producthunt.com/posts/lucy-ai', '_blank')}
-                >
-                  <ExternalLink className="w-4 h-4 mr-2" />
-                  Upvote on Product Hunt
-                </Button>
-              </div>
+            <div className="max-w-2xl mx-auto">
+              <ShareButtons 
+                url="https://lucylounge.org/launch"
+                title="Lucy AI is Live!"
+                description="Experience the future of AI with Lucy — Your Intelligent Digital Companion"
+              />
             </div>
           </div>
 
-          {/* Footer */}
           <Footer />
         </div>
-      </div>
+      </ParallaxEnvironment>
     </>
   );
 };
