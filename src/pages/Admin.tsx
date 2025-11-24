@@ -16,6 +16,7 @@ import {
   Clock
 } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
+import { SystemDashboard } from "@/components/admin/SystemDashboard";
 
 const Admin = () => {
   const navigate = useNavigate();
