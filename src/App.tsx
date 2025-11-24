@@ -5,6 +5,12 @@ import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import Landing from "./pages/Landing";
+import Pricing from "./pages/Pricing";
+import Features from "./pages/Features";
+import Launch from "./pages/Launch";
+import Blog from "./pages/Blog";
+import BlogPost from "./pages/BlogPost";
+import Tools from "./pages/Tools";
 import NotFound from "./pages/NotFound";
 import Auth from "./pages/Auth";
 import Chat from "./pages/Chat";
@@ -50,6 +56,12 @@ const App = () => {
             <AnalyticsTracker />
             <Routes>
               <Route path="/" element={<Landing />} />
+              <Route path="/pricing" element={<Pricing />} />
+              <Route path="/features" element={<Features />} />
+              <Route path="/launch" element={<Launch />} />
+              <Route path="/tools" element={<Tools />} />
+              <Route path="/blog" element={<Blog />} />
+              <Route path="/blog/:slug" element={<BlogPost />} />
               <Route path="/auth" element={<Auth />} />
               <Route path="/chat" element={<Chat />} />
               <Route path="/admin" element={<Admin />} />
