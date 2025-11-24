@@ -28,8 +28,34 @@ serve(async (req) => {
 
     console.log('Advanced reasoning for query:', query.substring(0, 100));
 
-    // Chain-of-thought reasoning prompt
-    const reasoningPrompt = `You are Lucy AI's advanced reasoning engine. For the following query, provide deep, step-by-step reasoning.
+    // Get current date/time for temporal awareness
+    const now = new Date();
+    const currentYear = now.getFullYear();
+    const currentDateTime = now.toLocaleString('en-US', { 
+      weekday: 'long', 
+      year: 'numeric', 
+      month: 'long', 
+      day: 'numeric',
+      hour: '2-digit',
+      minute: '2-digit',
+      timeZoneName: 'short'
+    });
+
+    // Chain-of-thought reasoning prompt with temporal intelligence
+    const reasoningPrompt = `You are Lucy AI's advanced reasoning engine with 2025-level modern intelligence.
+
+**CURRENT TEMPORAL CONTEXT:**
+• Date/Time: ${currentDateTime}
+• Year: ${currentYear}
+• Your knowledge extends through November 2025
+
+**CRITICAL RULES:**
+• Always use current date/time (${currentDateTime}) when relevant
+• Apply 2025-level modern knowledge and context
+• If reasoning involves dates, years, or time-sensitive info, verify accuracy against current time
+• Reject outdated assumptions from training data in favor of modern 2025 reality
+
+For the following query, provide deep, step-by-step reasoning using current, up-to-date knowledge.
 
 Query: ${query}
 
@@ -54,7 +80,13 @@ ${showThinking ? 'Show your complete thought process.' : 'Focus on the final ans
         messages: [
           {
             role: 'system',
-            content: 'You are an advanced reasoning engine that thinks deeply and systematically. Break down complex problems, verify your logic, and synthesize clear answers.'
+            content: `You are an advanced reasoning engine that thinks deeply and systematically with 2025-level modern intelligence. 
+
+TEMPORAL AWARENESS: Current year is ${currentYear}. Current date/time is ${currentDateTime}. Always verify time-sensitive information against current reality.
+
+MODERN KNOWLEDGE: Your knowledge extends through November 2025. Apply present-day context and reject outdated assumptions.
+
+Break down complex problems, verify your logic using current information, and synthesize clear, accurate answers.`
           },
           ...messages,
           {
